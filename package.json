@@ -1,0 +1,25 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "百度语音的Nodejs实现",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aokihu/BaiduYuyin.git"
+  },
+  "keywords": [
+    "baidu"
+  ],
+  "author": "aokihu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/aokihu/BaiduYuyin/issues"
+  },
+  "homepage": "https://github.com/aokihu/BaiduYuyin#readme",
+  "devDependencies": {
+    "babel-core": "^5.8.23"
+  }
+}
