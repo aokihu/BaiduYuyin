@@ -1,5 +1,5 @@
 {
-  "name": "y",
+  "name": "baidu_yuyin",
   "version": "1.0.0",
   "description": "百度语音的Nodejs实现",
   "main": "index.js",

@@ -12,6 +12,7 @@ var Player = require('player'),
     querystring = require('querystring'),
     request = require('request'),
     fs = require('fs')
+    child_process = require('child_process')
 
 
 function BDSpeech(apiKey, secrectKey){
@@ -30,10 +31,17 @@ function BDSpeech(apiKey, secrectKey){
   var sessionToken = "";
   self.isLogin = false;
 
-  self.player = new Player('./temp.mp3');
-  self.player.on('error', function(err){
-    console.log("Player Error", err);
-  })
+  // if the platform is Mac, use 'afplay' instead of Plater module
+  // because the Speaker module is not support new Nodejs 4.0 above
+  // so I will use native player on each platform to instead of Player module
+  if(process.platform != 'darwin')
+  {
+    self.player = new Player('./temp.mp3');
+    self.player.on('error', function(err){
+      console.log("Player Error", err);
+    })
+  }
+
 
   self.init = function(){
 
@@ -92,7 +100,14 @@ BDSpeech.prototype.speak = function(txt, opt){
   console.log(url)
   request(url, function(err, res, body){
 
-    self.player.play();
+    if(process.platform != 'darwin'){
+      self.player.play();
+    }
+    else {
+      //  use 'afplay' to play audio file on Mac
+      child_process.spawn('afplay',['temp.mp3'])
+    }
+
 
   })
   .pipe(fs.createWriteStream('./temp.mp3'))
