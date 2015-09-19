@@ -7,11 +7,19 @@ Baidu Yuyin 百度语音合成
 
 使用Baidu的在线语音合成服务，需要自己申请API Key，申请网址http://yuyin.baidu.com
 
+更新1.0.1[2015-9-18]
+----------------------
+1. Mac用户现在使用本地播放器来播放语音文件
+
+更新1.0.2[2015-9-19]
+----------------------
+1. 使用绝对地址保存零时语音文件
+
 使用方法
 -------
 ### 安装
 
-npm install BaiduYuyin
+npm install baidu_yuyin
 
 ### 使用
 `var BDSpeech = require("BDSpeech");

@@ -30,13 +30,15 @@ function BDSpeech(apiKey, secrectKey){
 
   var sessionToken = "";
   self.isLogin = false;
+  self.sessionFile = __dirname + '/session.json';
+  self.tempFile = __dirname + "/temp.mp3";
 
   // if the platform is Mac, use 'afplay' instead of Plater module
   // because the Speaker module is not support new Nodejs 4.0 above
   // so I will use native player on each platform to instead of Player module
   if(process.platform != 'darwin')
   {
-    self.player = new Player('./temp.mp3');
+    self.player = new Player(self.tempFile);
     self.player.on('error', function(err){
       console.log("Player Error", err);
     })
@@ -50,6 +52,18 @@ function BDSpeech(apiKey, secrectKey){
       'client_id':client_id,
       'client_secret':client_secret
     }
+
+    // #TODO 这里要检查session文件是否存在
+    //       做一个缓冲，免得每次都去请求一下
+    // check session token is exist
+    if(fs.accessSync(self.sessionFile, fs.F_OK))
+    {
+      var _sessionJson = JSON.parse(fs.readFileSync(self.sessionFile));
+      sessionToken = _sessionJson.token;
+      // check timeout
+    }
+
+    // #TODO 上面的还没有完工
 
     var _url = __accessUrl__ + "?" + querystring.stringify(params);
 
@@ -105,12 +119,12 @@ BDSpeech.prototype.speak = function(txt, opt){
     }
     else {
       //  use 'afplay' to play audio file on Mac
-      child_process.spawn('afplay',['temp.mp3'])
+      child_process.spawn('afplay',[self.tempFile])
     }
 
 
   })
-  .pipe(fs.createWriteStream('./temp.mp3'))
+  .pipe(fs.createWriteStream(self.tempFile))
 
 }
 
