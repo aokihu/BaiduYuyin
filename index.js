@@ -146,7 +146,7 @@ BDSpeech.prototype.speak = function(txt, opt){
     let cmd = ''
 
     if(process.platform != 'darwin'){
-      cmd = 'aplay'
+      cmd = 'mplayer -ao alsa'
     }
     else {
       cmd = 'afplay'
