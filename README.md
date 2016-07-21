@@ -15,6 +15,12 @@ Baidu Yuyin 百度语音合成
 ----------------------
 1. 使用绝对地址保存零时语音文件
 
+跟新1.0.3[2016-7-21]
+----------------------
+1. 增加了缓存sessionToken到本地的功能，免得每次都去请求一边，超过24小时重新请求
+2. Linux系统使用aplay命令播放语音文件
+3. 自动删除下载的mp3文件
+
 使用方法
 -------
 ### 安装
@@ -22,6 +28,8 @@ Baidu Yuyin 百度语音合成
 npm install baidu_yuyin
 
 ### 使用
-`var BDSpeech = require("BDSpeech");
+```javascript
+var BDSpeech = require("BDSpeech");
 var speech = new BDSpeech(apiKey, secretKey);
-speech.speak("你好世界")`
+speech.speak("你好世界")
+```

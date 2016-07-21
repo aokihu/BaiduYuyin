@@ -1,6 +1,6 @@
 {
   "name": "baidu_yuyin",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "百度语音的Nodejs实现",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/aokihu/BaiduYuyin.git"
   },
   "keywords": [
-    "baidu"
+    "baidu","speech","语音合成"
   ],
   "author": "aokihu",
   "license": "MIT",

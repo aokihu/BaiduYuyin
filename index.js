@@ -6,13 +6,15 @@
  * @description 需要自己提供API的key,网址http://yuyin.baidu.com
  *
  */
-var Player = require('player'),
-    eventEmitter = require('events').EventEmitter,
-    util   = require('util'),
-    querystring = require('querystring'),
-    request = require('request'),
-    fs = require('fs')
-    child_process = require('child_process')
+'use strict'
+
+const Player = require('player')
+const eventEmitter = require('events').EventEmitter
+const util   = require('util')
+const querystring = require('querystring')
+const request = require('request')
+const fs = require('fs')
+const child_process = require('child_process')
 
 
 function BDSpeech(apiKey, secrectKey){
@@ -32,6 +34,7 @@ function BDSpeech(apiKey, secrectKey){
   self.isLogin = false;
   self.sessionFile = __dirname + '/session.json';
   self.tempFile = __dirname + "/temp.mp3";
+
 
   // if the platform is Mac, use 'afplay' instead of Plater module
   // because the Speaker module is not support new Nodejs 4.0 above
@@ -53,29 +56,52 @@ function BDSpeech(apiKey, secrectKey){
       'client_secret':client_secret
     }
 
+
     // #TODO 这里要检查session文件是否存在
     //       做一个缓冲，免得每次都去请求一下
     // check session token is exist
-    if(fs.accessSync(self.sessionFile, fs.F_OK))
-    {
-      var _sessionJson = JSON.parse(fs.readFileSync(self.sessionFile));
-      sessionToken = _sessionJson.token;
-      // check timeout
-    }
+    fs.access(self.sessionFile, fs.F_OK, err => {
 
-    // #TODO 上面的还没有完工
+      if(err){
 
-    var _url = __accessUrl__ + "?" + querystring.stringify(params);
+        // 从百度哪里获取token session
 
-    request(_url, function(err, res, body){
-      var json = JSON.parse(body)
-      _token = json.access_token
+        var _url = __accessUrl__ + "?" + querystring.stringify(params);
 
-      self.sessionToken = _token
-      self.isLogin = true
+        request(_url, function(err, res, body){
+          let json = JSON.parse(body)
+          let _token = json.access_token
 
-      self.emit('ready', _token)
-    });
+          self.sessionToken = _token
+          self.isLogin = true
+
+          // write session token to local file
+          fs.writeFile(self.sessionFile, JSON.stringify({token:_token}), err => {
+            if(err) throw err
+          })
+
+          self.emit('ready', _token)
+        });
+
+      }
+      else{
+
+        // read bufferd token session
+        let _sessionJson = JSON.parse(fs.readFileSync(self.sessionFile));
+        sessionToken = _sessionJson.token;
+
+        self.sessionToken = sessionToken
+        self.isLogin = true
+
+
+
+
+        self.emit('ready', sessionToken)
+      }
+
+    })
+
+
   }
 
   // 继承EventEmitter
@@ -110,21 +136,32 @@ BDSpeech.prototype.speak = function(txt, opt){
     'per':0
   }
 
-  var url = self.__url__ + "?" + querystring.stringify(params)
-  console.log(url)
-  request(url, function(err, res, body){
+  let url = self.__url__ + "?" + querystring.stringify(params)
+
+  // download file pipeline
+  let download = fs.createWriteStream(self.tempFile)
+
+  download.on('finish', ()=>{
+
+    let cmd = ''
 
     if(process.platform != 'darwin'){
-      self.player.play();
+      cmd = 'aplay'
     }
     else {
-      //  use 'afplay' to play audio file on Mac
-      child_process.spawn('afplay',[self.tempFile])
+      cmd = 'afplay'
     }
 
+    child_process.spawn(cmd,[self.tempFile])
+    .on('exit', (code, signal) => {
+      // remove temp muisc file
+      fs.unlinkSync(self.tempFile)
+    })
 
   })
-  .pipe(fs.createWriteStream(self.tempFile))
+
+  // download text audio file
+  request(url).pipe(download)
 
 }
 
