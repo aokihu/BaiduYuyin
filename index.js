@@ -33,7 +33,7 @@ class BDSpeech extends eventEmitter{
    * @return {[type]}                  [description]
    */
 
-  constructor (apiKey, secrectKey, playCmd="afplay", path,bufferd=false) {
+  constructor (apiKey, secrectKey, playCmd="afplay", path, bufferd=false) {
 
     super()
 
