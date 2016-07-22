@@ -1,6 +1,6 @@
 {
   "name": "baidu_yuyin",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "百度语音的Nodejs实现",
   "main": "index.js",
   "scripts": {
