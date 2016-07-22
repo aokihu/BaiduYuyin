@@ -12,6 +12,7 @@ Baidu Yuyin 百度语音合成
 1. 更改了播放器的调用方式，不再根据平台自行选择，需要使用者自己来判断使用播放mp3的命令，默认使用afplay
 2. Nodejs最低版本为5.0，因为使用了ES6的Class形式，低版本不再支持，我想大家应该已经升级了吧
 3. 增加了指定临时下载语音文件保存目录参数，如果不设定的话就保存在当前目录下
+4. 更新了依赖项目，去掉了不使用的player库，（这货实在不实用啊）
 
 更新1.0.3[2016-7-21]
 ----------------------
@@ -32,11 +33,16 @@ Baidu Yuyin 百度语音合成
 -------
 ### 安装
 
-npm install baidu_yuyin
+`npm install baidu_yuyin`
 
 ### 使用
 ```javascript
 var BDSpeech = require("BDSpeech");
-var speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp');
-speech.speak("你好世界")
+
+var speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp')
+
+speech.on('ready', () => {
+  speech.speak("你好世界")
+})
+
 ```
