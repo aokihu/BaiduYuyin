@@ -64,7 +64,7 @@ class BDSpeech extends eventEmitter{
         // 从百度获取token session
         var _url = __accessUrl__ + "?" + querystring.stringify(params);
 
-        request(_url, function(err, res, body){
+        request(_url, (err, res, body) => {
           let json = JSON.parse(body)
           let _token = json.access_token
 
