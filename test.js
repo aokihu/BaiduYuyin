@@ -6,5 +6,5 @@ speech.on('ready', function(token){
   var now = new Date();
   var time = now.getHours()+":"+now.getMinutes()+":"+now.getSeconds();
 
-  speech.speak('下午好,现在时间'+time)
+  speech.speak('快点接电话，快点接电话')
 })
