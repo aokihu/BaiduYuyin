@@ -1,10 +1,6 @@
 {
   "name": "baidu_yuyin",
-<<<<<<< HEAD
-  "version": "1.0.0",
-=======
-  "version": "1.0.7",
->>>>>>> 1a8574ff11cbc0c36090a4dbcaee1373eeae4c62
+  "version": "1.1.0",
   "description": "百度语音的Nodejs实现",
   "main": "index.js",
   "scripts": {
@@ -15,7 +11,11 @@
     "url": "git+https://github.com/aokihu/BaiduYuyin.git"
   },
   "keywords": [
-    "baidu","speech","语音合成","TTS","百度"
+    "baidu",
+    "speech",
+    "语音合成",
+    "TTS",
+    "百度"
   ],
   "author": "aokihu",
   "license": "MIT",
@@ -24,12 +24,8 @@
   },
   "homepage": "https://github.com/aokihu/BaiduYuyin#readme",
   "dependencies": {
-<<<<<<< HEAD
+    "md5": "^2.1.0",
     "request": "^2.61.0"
-=======
-    "request":"^2.61.0"
->>>>>>> 1a8574ff11cbc0c36090a4dbcaee1373eeae4c62
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

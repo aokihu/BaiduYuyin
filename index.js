@@ -12,6 +12,7 @@ const eventEmitter = require('events').EventEmitter
 const util   = require('util')
 const querystring = require('querystring')
 const request = require('request')
+const md5 = require('md5')
 const fs = require('fs')
 const child_process = require('child_process')
 
@@ -45,6 +46,7 @@ class BDSpeech extends eventEmitter{
     let grant_type = 'client_credentials'
 
     this.bufferd = bufferd // 是否缓存音乐
+    this.bufferdPath = __dirname + '/download'
     this.sessionToken = ''
     this.isLogin = false
     this.sessionFile = __dirname + '/session.json'
@@ -94,6 +96,25 @@ class BDSpeech extends eventEmitter{
 
     })
 
+
+    // 处理缓存
+    if(this.bufferd){
+
+      // 检查缓存目录是否存在
+      // 不存在就创建一个
+      fs.access(this.bufferdPath, fs.F_OK, err => {
+
+        if(err)
+        {
+          fs.mkdir(this.bufferdPath)
+        }
+
+
+
+      })
+
+    }
+
   }
 
   /**
@@ -106,36 +127,59 @@ class BDSpeech extends eventEmitter{
 
   speak(txt, opt){
 
-    var id = (new Date()).getTime();
+    var id = 'fsu77883jjfkfkkf' //(new Date()).getTime();
     var params = {
       'tex':encodeURIComponent(txt),
       'lan':'zh',
       'tok':this.sessionToken,
       'ctp':1,
       'cuid':'BDS-'+id,
-      'spd':5,
-      'pit':5,
+      'spd':4,
+      'pit':4,
       'vol':5,
       'per':0
     }
 
     let url = this.__url__ + "?" + querystring.stringify(params)
+    let dl = md5(url)
 
-    // download file pipeline
-    let download = fs.createWriteStream(this.tempFile)
+    return new Promise((resolve, reject) => {
 
-    download.on('finish', ()=>{
+      if(this.bufferd){
+        try{
+          fs.accessSync(this.bufferdPath + '/' + dl,  fs.F_OK|fs.R_OK)
+          child_process.spawn(this.playCmd, [this.bufferdPath + '/' + dl])
+          .on('exit', (code, signal) => resolve())
+          return true
 
-      child_process.spawn(this.playCmd,[this.tempFile])
-      .on('exit', (code, signal) => {
-        // remove temp muisc file
-        fs.unlinkSync(this.tempFile)
+        }catch(err){
+
+        }
+      }
+
+      // download file pipeline
+      let dlFile = this.bufferd ? this.bufferdPath + '/' + dl : this.tempFile
+      let download = fs.createWriteStream(dlFile)
+
+      download.on('finish', ()=>{
+
+        child_process.spawn(this.playCmd,[dlFile])
+        .on('exit', (code, signal) => {
+          // remove temp muisc file
+          if(!this.bufferd){
+            fs.unlinkSync(dlFile)
+          }
+
+          resolve()
+
+        })
+
       })
 
-    })
+      // download text audio file
+      request(url).pipe(download)
 
-    // download text audio file
-    request(url).pipe(download)
+    });
 
   }
 

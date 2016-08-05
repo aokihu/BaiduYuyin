@@ -1,2 +1,4 @@
 node_modules/
 session.json
+download/
+*.mp3
