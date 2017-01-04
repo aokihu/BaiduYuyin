@@ -7,6 +7,7 @@ Baidu Yuyin 百度语音合成
 
 使用Baidu的在线语音合成服务，需要自己申请API Key，申请网址http://yuyin.baidu.com
 
+
 更新1.0.7[2016-7-22]
 ----------------------
 1. 更改了播放器的调用方式，不再根据平台自行选择，需要使用者自己来判断使用播放mp3的命令，默认使用afplay
@@ -35,9 +36,13 @@ Baidu Yuyin 百度语音合成
 
 `npm install baidu_yuyin`
 
+注意：播放声音需要安装mplayer
+
 ### 使用
 ```javascript
-var BDSpeech = require("BDSpeech");
+var BDSpeech = require("baidu_yuyin");
+var apiKey = "从这里：http://yuyin.baidu.com/app获取";
+var secretKey = "从这里：http://yuyin.baidu.com/app获取";
 
 var speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp')
 
