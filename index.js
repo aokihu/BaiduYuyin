@@ -109,8 +109,6 @@ class BDSpeech extends eventEmitter{
           fs.mkdir(this.bufferdPath)
         }
 
-
-
       })
 
     }
@@ -153,7 +151,7 @@ class BDSpeech extends eventEmitter{
           return true
 
         }catch(err){
-
+          reject(err);
         }
       }
 
@@ -167,11 +165,17 @@ class BDSpeech extends eventEmitter{
         .on('exit', (code, signal) => {
           // remove temp muisc file
           if(!this.bufferd){
-            fs.unlinkSync(dlFile)
+          // check file is exist
+            try{
+              fs.accessSync(this.bufferdPath + '/' + dl,  fs.F_OK|fs.R_OK)
+              fs.unlinkSync(dlFile)
+            }
+            catch(err){
+              console.log(err)
+            }
+            
           }
-
           resolve()
-
         })
 
       })

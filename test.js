@@ -1,6 +1,6 @@
 var BDSpeech = require("./index.js")
 
-var speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", "adb28deb5103bde96bd9633dd437ff2d", 'afplay',null, true);
+var speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", "adb28deb5103bde96bd9633dd437ff2d", 'afplay', './download', true);
 speech.on('ready', token => {
 
   // var now = new Date();
@@ -24,9 +24,9 @@ speech.on('ready', token => {
   // speech.speak(`${daytime}好,现在时间是${daytime}${time}`)
   //
 
-  speech.speak('你好，欢迎光临利生宝公共广播系统')
-  .then(() => {return speech.speak('我公司集合研发、生产、销售于一体')})
-  .then(() => speech.speak('生产销售适用于公用场所、家居生活的音响设施'))
+  // speech.speak('你好，欢迎光临利生宝公共广播系统')
+  // .then(() => {return speech.speak('我公司集合研发、生产、销售于一体')})
+  // .then(() => speech.speak('生产销售适用于公用场所、家居生活的音响设施'))
 
-
+  speech.speak('切换到D L N A模式')
 })
