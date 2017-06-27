@@ -46,9 +46,9 @@ class BDSpeech extends eventEmitter {
   constructor(apiKey, secrectKey, playCmd = "afplay", path, bufferd = false) {
     super();
 
-    const client_id = apiKey;
-    const client_secret = secrectKey;
-    const grant_type = "client_credentials";
+    this.client_id = apiKey;
+    this.client_secret = secrectKey;
+    this.grant_type = "client_credentials";
 
     this.bufferd = bufferd; // 是否缓存音乐
     this.bufferdPath = __dirname + "/download";
@@ -62,7 +62,11 @@ class BDSpeech extends eventEmitter {
     this.vaildToken()
       .then(this.tokenReady.bind(this))
       .catch(() => {
-        const params = { grant_type, client_id, client_secret };
+        const params = { 
+          grant_type:this.grant_type,
+          client_id:this.client_id,
+          client_secret:this.client_secret
+        };
         this.requestToken(params)
           .then(this.tokenReady.bind(this))
           .catch(console.error);
@@ -81,10 +85,26 @@ class BDSpeech extends eventEmitter {
   }
 
   /**
-   * @method 
+   * @method 初始化SessionToken
+   * @abstract  这个方法是一个异步回掉方法
+   *            为将来的async/await方式做准备
    */
   initToken() {
+    return new Promise((resolve, reject) => {
+      this.vaildToken()
+      .then(resolve)
+      .catch(() => {
+        const params = { 
+          grant_type:this.grant_type,
+          client_id:this.client_id,
+          client_secret:this.client_secret
+        };
 
+        this.requestToken(params)
+          .then(resolve)
+          .catch(reject);
+      })
+    })
   }
 
   /**
@@ -247,7 +267,7 @@ class BDSpeech extends eventEmitter {
       // 不需要缓存
       return this.downloadSpeechFile(speechFile, url)
                  .then(this.loudSpeak.bind(this))
-                 .catch(console.log))
+                 .catch(console.log);
     }
 
   }
