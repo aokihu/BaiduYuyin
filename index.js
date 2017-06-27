@@ -248,7 +248,7 @@ class BDSpeech extends eventEmitter {
             } 
             else {
               const _cmd = cmd.replace('${file}', file);
-              child_process.spawn(cmd).on("exit", (code, signal) => {
+              child_process.exec(_cmd).on("exit", (code, signal) => {
 
                 if (!this.bufferd) {
                   fs.unlink(file, err => { if (err) { console.log(err) } })
@@ -280,13 +280,25 @@ class BDSpeech extends eventEmitter {
    * @param {Number} per 语音的人物
    * @param {CMD} agent 中间人命令
    */
-  speak(txt, {lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0, agent}){
-    console.log(lan)
+  speak(txt, lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0){
+    return this.initToken()
+    .then(() => {
+      return this._speak({txt,lan,ctp,spd,pit,vol,per});
+    })
+
+  }
+
+  /**
+   * 代理人播报
+   * @param {CMD} agent 代理人命令
+   * @param {String} txt 语音播报文字
+   * @param {Object} opt 选项
+   */
+  agentSpeak(agent, txt , lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0){
     return this.initToken()
     .then(() => {
       return this._speak({txt,lan,ctp,spd,pit,vol,per,agent});
     })
-
   }
 
   /**
@@ -316,7 +328,7 @@ class BDSpeech extends eventEmitter {
 
     // 如果有代理人播报
     // 使用代理人命令
-    const _loudSpeak = agent ? this.agentWarp(agent) : this.loudSpeak
+    const _loudSpeak = agent ? this.agentWarp(agent) : this.loudSpeak;
 
     if (this.bufferd) {
       // 需要缓存

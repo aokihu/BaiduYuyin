@@ -34,4 +34,4 @@ const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih",
 //   // speech.speak('切换到D L N A模式')
 // })
 // speech.speak('今天天气不错?出去玩不,哈哈哈哈')
-speech.speak('天气不错', { per:3,'agent':'gst-launch-1.0 filesink=${file}' })
+speech.agentSpeak('gst-launch-1.0 filesrc location=${file} ! decodebin ! audioconvert ! autoaudiosink','天气不错')
