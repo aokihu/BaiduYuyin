@@ -244,8 +244,7 @@ class BDSpeech extends eventEmitter {
    * @param {Number} vol 音量
    * @param {Number} per 语音的人物
    */
-  speak(txt, opt){
-    const {lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0} = opt;
+  speak(txt, ...{lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0}){
     return this.initToken()
     .then(() => {
       return this._speak({txt,lan,ctp,spd,pit,vol,per});
