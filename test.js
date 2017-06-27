@@ -1,7 +1,12 @@
 var BDSpeech = require("./index.js")
 
 const buffer = false;
-const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", "adb28deb5103bde96bd9633dd437ff2d", 'afplay', './download', buffer);
+const player = 'mplayer';
+const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", 
+                            "adb28deb5103bde96bd9633dd437ff2d", 
+                            player, 
+                            null, 
+                            buffer);
 // speech.on('ready', token => {
 //   // var now = new Date();
 //   // var time = now.getHours()+"点"+now.getMinutes()+"分"
@@ -28,4 +33,4 @@ const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", "adb28deb5103bde96bd9633
 
 //   // speech.speak('切换到D L N A模式')
 // })
-speech.speak('今天天气不错?出去玩不,哈哈哈哈',{per:1,spd:9})
+speech.speak('今天天气不错?出去玩不,哈哈哈哈',{per:1,spd:5})
