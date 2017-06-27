@@ -234,6 +234,41 @@ class BDSpeech extends eventEmitter {
   }
 
   /**
+   * 给代理人命令包装一个Promise外衣
+   * @param {String} cmd 代理人命令
+   */
+  agentWarp(cmd) {
+
+    return function(file){
+      return new Promise((resolve, reject) => {
+        try {
+          fs.access(file, fs.F_OK | fs.R_OK, err => {
+            if (err) {
+              reject();
+            } 
+            else {
+              const _cmd = cmd.replace('${file}', file);
+              child_process.spawn(cmd).on("exit", (code, signal) => {
+
+                if (!this.bufferd) {
+                  fs.unlink(file, err => { if (err) { console.log(err) } })
+                }
+                resolve();
+
+              });
+            }
+          });
+
+        } catch (err) {
+          reject(err);
+        }
+
+      });
+    }
+    
+  }
+
+  /**
    * @public
    * @method 播报语音
    * @param {String} txt 播报的文字
@@ -243,11 +278,13 @@ class BDSpeech extends eventEmitter {
    * @param {Number} pit 忘记了
    * @param {Number} vol 音量
    * @param {Number} per 语音的人物
+   * @param {CMD} agent 中间人命令
    */
-  speak(txt, ...{lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0}){
+  speak(txt, {lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0, agent}){
+    console.log(lan)
     return this.initToken()
     .then(() => {
-      return this._speak({txt,lan,ctp,spd,pit,vol,per});
+      return this._speak({txt,lan,ctp,spd,pit,vol,per,agent});
     })
 
   }
@@ -260,7 +297,7 @@ class BDSpeech extends eventEmitter {
    * @return {[type]}     [description]
    */
 
-  _speak({txt, lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0 }) {
+  _speak({txt, lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0, agent }) {
     
     const id = BDID;
     const params = {
@@ -277,19 +314,23 @@ class BDSpeech extends eventEmitter {
     const bufferFile = this.bufferdPath + "/" + dl;
     const speechFile = this.bufferd ? bufferFile : this.tempFile;
 
+    // 如果有代理人播报
+    // 使用代理人命令
+    const _loudSpeak = agent ? this.agentWarp(agent) : this.loudSpeak
+
     if (this.bufferd) {
       // 需要缓存
       return this.loudSpeak(speechFile)
                  .catch(err => {
                     return this.downloadSpeechFile(speechFile, url)
-                        .then(this.loudSpeak.bind(this))
+                        .then(_loudSpeak.bind(this))
                         .catch(console.log)
                   });
     }
     else {
       // 不需要缓存
       return this.downloadSpeechFile(speechFile, url)
-                 .then(this.loudSpeak.bind(this))
+                 .then(_loudSpeak.bind(this))
                  .catch(console.log);
     }
 
