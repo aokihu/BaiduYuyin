@@ -2,3 +2,4 @@ node_modules/
 session.json
 download/
 *.mp3
+.vscode/

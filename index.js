@@ -63,10 +63,10 @@ class BDSpeech extends eventEmitter {
       .then(this.tokenReady.bind(this))
       .catch(() => {
         const params = { grant_type, client_id, client_secret };
-        return this.requestToken(params);
+        this.requestToken(params)
+          .then(this.tokenReady.bind(this))
+          .catch(console.error);
       })
-      .then(this.tokenReady.bind(this))
-      .catch(console.error);
 
     // 处理缓存
     if (this.bufferd) {
@@ -153,20 +153,36 @@ class BDSpeech extends eventEmitter {
   loudSpeak(file) {
     return new Promise((resolve, reject) => {
       try {
-        fs.accessSync(file, fs.F_OK | fs.R_OK);
-        child_process.spawn(this.playCmd, [file]).on("exit", (code, signal) => {
-          resolve();
+
+        fs.access(file, fs.F_OK | fs.R_OK, err => {
+          if (err) {
+            reject();
+          } 
+          else {
+            child_process.spawn(this.playCmd, [file]).on("exit", (code, signal) => {
+
+              if (!this.bufferd) {
+                fs.unlink(file, err => { if (err) { console.log(err) } })
+              }
+              resolve();
+
+            });
+          }
         });
+
       } catch (err) {
         reject(err);
       }
+
     });
   }
 
   /**
    * 下载语音文件
+   * @param {String} file 下载的文件路径
+   * @param {String} url  百度语音的语音文件url
    */
-  downloadSpeechFile(file, url){
+  downloadSpeechFile(file, url) {
 
     return new Promise((resolve, reject) => {
 
@@ -195,39 +211,40 @@ class BDSpeech extends eventEmitter {
    * @return {[type]}     [description]
    */
 
-  speak(txt, opt) {
-    var id = BDID;
-    var params = {
+  speak(txt, ...{ lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0 }) {
+    const id = BDID;
+    const params = {
       tex: encodeURIComponent(txt),
-      lan: "zh",
       tok: this.sessionToken,
-      ctp: 1,
       cuid: "BDS-" + id,
-      spd: 4,
-      pit: 4,
-      vol: 5,
-      per: 0
+      lan, ctp, spd, pit, vol, per
     };
 
-    let url = BDSpeechUrl + "?" + querystring.stringify(params);
-    let dl = md5(url);
+    const url = `${BDSpeechUrl}?${querystring.stringify(params)}`;
+    const dl = md5(url);
+
     // 语音文件
     const bufferFile = this.bufferdPath + "/" + dl;
     const speechFile = this.bufferd ? bufferFile : this.tempFile;
 
-    if(this.bufferd){
+    if (this.bufferd) {
+      // 需要缓存
       return this.loudSpeak(speechFile)
-      .catch(err => {
-        this.downloadSpeechFile(speechFile, url)
-        .then(file => {return this.loudSpeak(file)})
-        .catch(console.log)
-      });
-    } else {
-      return this.downloadSpeechFile(speechFile, url)
-      .then(file => {return this.loudSpeak(file)})
-      .catch(console.log)
+                 .catch(err => {
+                    return this.downloadSpeechFile(speechFile, url)
+                        .then(this.loudSpeak.bind(this))
+                        .catch(console.log)
+                  });
     }
+    else {
+      // 不需要缓存
+      return this.downloadSpeechFile(speechFile, url)
+                 .then(this.loudSpeak.bind(this))
+                 .catch(console.log))
+    }
+
   }
+
 }
 
 module.exports = BDSpeech;
