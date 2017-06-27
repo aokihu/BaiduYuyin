@@ -16,18 +16,32 @@ Baidu Yuyin 百度语音合成
 
 `npm install baidu_yuyin`
 
-注意：播放声音需要安装mplayer
+注意：现在使用外部播放器来播放语音文件，请指定正确的播放器的命令行参数
 
-### 使用
+### 传统回掉方式使用
 ```javascript
-var BDSpeech = require("baidu_yuyin");
-var apiKey = "从这里：http://yuyin.baidu.com/app获取";
-var secretKey = "从这里：http://yuyin.baidu.com/app获取";
+const BDSpeech = require("baidu_yuyin");
+const apiKey = "从这里：http://yuyin.baidu.com/app获取";
+const secretKey = "从这里：http://yuyin.baidu.com/app获取";
 
-var speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp')
+const speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp')
 
 speech.on('ready', () => {
   speech.speak("你好世界")
 })
 
+```
+
+### async/await异步方式调用
+```javascript
+const BDSpeech = require("baidu_yuyin");
+const apiKey = "从这里：http://yuyin.baidu.com/app获取";
+const secretKey = "从这里：http://yuyin.baidu.com/app获取";
+
+const speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp')
+
+async function speak(){
+  await speech();
+  speech.speak('你好世界');
+}
 ```
