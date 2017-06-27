@@ -81,6 +81,13 @@ class BDSpeech extends eventEmitter {
   }
 
   /**
+   * @method 
+   */
+  initToken() {
+
+  }
+
+  /**
    * @method 验证Token的有效性
    * 因为token会过期，之前没有注意到
    * 因此当过期的token存的时候，无法正常获取语音文件
