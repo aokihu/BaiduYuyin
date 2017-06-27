@@ -41,7 +41,9 @@ const secretKey = "从这里：http://yuyin.baidu.com/app获取";
 const speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp')
 
 async function speak(){
-  await speech();
+  await speech.initToken();
   speech.speak('你好世界');
 }
+
+speak();
 ```
