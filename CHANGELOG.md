@@ -1,6 +1,22 @@
 Change Log
 ==========
 
+Version 2.0.3 (2017.6.25)
+-------------------------
+实现了不需要初始化session的方法😂
+
+现在使用的时候只要初始化,然后就能直接speak了
+
+使用方法如下
+```javascript
+const BDSpeech = require("baidu_yuyin");
+const apiKey = "从这里：http://yuyin.baidu.com/app获取";
+const secretKey = "从这里：http://yuyin.baidu.com/app获取";
+
+const speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp');
+speech.speak('你好，世界')
+```
+
 Version 2.0 (2017.6.25)
 -----------------------
 该版本使用Nodejs v8.0开发，会使用到ES2015，甚至ES0217的一些语法，建议您使用Nodejs v7.0以上使用

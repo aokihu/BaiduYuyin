@@ -1,6 +1,6 @@
 var BDSpeech = require("./index.js")
 
-const buffer = true;
+const buffer = false;
 const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", "adb28deb5103bde96bd9633dd437ff2d", 'afplay', './download', buffer);
 // speech.on('ready', token => {
 //   // var now = new Date();
@@ -28,11 +28,4 @@ const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih", "adb28deb5103bde96bd9633
 
 //   // speech.speak('切换到D L N A模式')
 // })
-
-
-async function speak(){
-  await speech.initToken();
-  speech.speak('天气不错')
-}
-
-speak();
+speech.speak('今天天气不错?出去玩不,哈哈哈哈',{per:1,spd:9})

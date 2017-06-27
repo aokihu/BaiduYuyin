@@ -55,22 +55,23 @@ class BDSpeech extends eventEmitter {
     this.sessionToken = "";
     this.isLogin = false;
     this.sessionFile = __dirname + "/session.json";
+    this.sessionTimestamp = null; // session token的缓存时间戳
     this.tempFile = (path ? path : __dirname) + "/temp.mp3";
     this.playCmd = playCmd;
 
     // 获取Token
     this.vaildToken()
-      .then(this.tokenReady.bind(this))
-      .catch(() => {
-        const params = { 
-          grant_type:this.grant_type,
-          client_id:this.client_id,
-          client_secret:this.client_secret
-        };
-        this.requestToken(params)
-          .then(this.tokenReady.bind(this))
-          .catch(console.error);
-      })
+        .then(this.tokenReady.bind(this))
+        .catch(() => {
+          const params = { 
+            grant_type:this.grant_type,
+            client_id:this.client_id,
+            client_secret:this.client_secret
+          };
+          this.requestToken(params)
+            .then(this.tokenReady.bind(this))
+            .catch(console.error);
+        })
 
     // 处理缓存
     if (this.bufferd) {
@@ -91,19 +92,21 @@ class BDSpeech extends eventEmitter {
    */
   initToken() {
     return new Promise((resolve, reject) => {
+      
       this.vaildToken()
-      .then(resolve)
-      .catch(() => {
-        const params = { 
-          grant_type:this.grant_type,
-          client_id:this.client_id,
-          client_secret:this.client_secret
-        };
-
-        this.requestToken(params)
           .then(resolve)
-          .catch(reject);
-      })
+          .catch(() => {
+            const params = { 
+              grant_type:this.grant_type,
+              client_id:this.client_id,
+              client_secret:this.client_secret
+            };
+
+            this.requestToken(params)
+              .then(resolve)
+              .catch(reject);
+          });
+
     })
   }
 
@@ -231,6 +234,26 @@ class BDSpeech extends eventEmitter {
   }
 
   /**
+   * @public
+   * @method 播报语音
+   * @param {String} txt 播报的文字
+   * @param {String} lan 语言
+   * @param {String} ctp 忘记了
+   * @param {Number} spd 播报速度
+   * @param {Number} pit 忘记了
+   * @param {Number} vol 音量
+   * @param {Number} per 语音的人物
+   */
+  speak(txt, opt){
+    const {lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0} = opt;
+    return this.initToken()
+    .then(() => {
+      return this._speak({txt,lan,ctp,spd,pit,vol,per});
+    })
+
+  }
+
+  /**
    * [speak description]
    * @method speak
    * @param  {[type]} txt [description]
@@ -238,7 +261,8 @@ class BDSpeech extends eventEmitter {
    * @return {[type]}     [description]
    */
 
-  speak(txt, ...{ lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0 }) {
+  _speak({txt, lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0 }) {
+    
     const id = BDID;
     const params = {
       tex: encodeURIComponent(txt),
