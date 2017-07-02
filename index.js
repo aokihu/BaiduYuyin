@@ -17,7 +17,7 @@ const fs = require("fs");
 const child_process = require("child_process");
 
 // 获取Token的url
-const AccessUrl = "https://openapi.baidu.com/oauth/2.0/token";
+const AccessUrl = "http://openapi.baidu.com/oauth/2.0/token";
 // 百度语音合成url
 const BDSpeechUrl = "http://tsn.baidu.com/text2audio";
 // Session信息
@@ -140,6 +140,10 @@ class BDSpeech extends eventEmitter {
 
     return new Promise((resolve, reject) => {
       request(_url, (err, res, body) => {
+        if(err){
+          console.log(err)
+        }
+
         const { access_token: token } = JSON.parse(body);
         this.saveToken(token).then(resolve).catch(reject);
       });
