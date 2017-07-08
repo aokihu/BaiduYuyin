@@ -12,7 +12,8 @@ const eventEmitter = require("events").EventEmitter;
 const util = require("util");
 const request = require("request");
 const querystring = require("querystring");
-const md5 = require("md5");
+const crypto = require('crypto');
+const hash = crypto.createHash('md5');
 const fs = require("fs");
 const child_process = require("child_process");
 
@@ -324,7 +325,9 @@ class BDSpeech extends eventEmitter {
     };
 
     const url = `${BDSpeechUrl}?${querystring.stringify(params)}`;
-    const dl = md5(url);
+    hash.update(url);
+    const dl = hash.digest('hex');
+    console.log(dl);
 
     // 语音文件
     const bufferFile = this.bufferdPath + "/" + dl;
