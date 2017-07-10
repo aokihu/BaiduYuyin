@@ -10,12 +10,14 @@
 
 const eventEmitter = require("events").EventEmitter;
 const util = require("util");
-const request = require("request");
+const URL = require('url').URL;
+const http = require('http');
 const querystring = require("querystring");
 const crypto = require('crypto');
 const hash = crypto.createHash('md5');
 const fs = require("fs");
 const child_process = require("child_process");
+const got = require('./request.js');
 
 // 获取Token的url
 const AccessUrl = "http://openapi.baidu.com/oauth/2.0/token";
@@ -139,16 +141,24 @@ class BDSpeech extends eventEmitter {
     // 从百度获取token session
     const _url = AccessUrl + "?" + querystring.stringify(params);
 
-    return new Promise((resolve, reject) => {
-      request(_url, (err, res, body) => {
-        if(err){
-          console.log(err)
-        }
+    // return new Promise((resolve, reject) => {
+    //   request(_url, (err, res, body) => {
+    //     if(err){
+    //       console.log(err)
+    //     }
 
-        const { access_token: token } = JSON.parse(body);
-        this.saveToken(token).then(resolve).catch(reject);
-      });
-    });
+    //     const { access_token: token } = JSON.parse(body);
+    //     this.saveToken(token).then(resolve).catch(reject);
+    //   });
+    // });
+
+    return got(_url)
+    .then(body => {
+      const { access_token: token } = JSON.parse(body);
+      return this.saveToken(token)
+    })
+    .catch(console.error);
+
   }
 
   /**
@@ -232,7 +242,11 @@ class BDSpeech extends eventEmitter {
       })
 
       // download text audio file
-      request(url).pipe(download);
+      const req = http.request(new URL(url), (res) => {
+        res.pipe(download);
+      });
+
+      req.end();
 
     })
 
