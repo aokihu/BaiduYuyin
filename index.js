@@ -14,7 +14,7 @@ const URL = require('url').URL;
 const http = require('http');
 const querystring = require("querystring");
 const crypto = require('crypto');
-const hash = crypto.createHash('md5');
+// const hash = crypto.createHash('md5');
 const fs = require("fs");
 const child_process = require("child_process");
 const got = require('./request.js');
@@ -40,9 +40,9 @@ class BDSpeech extends eventEmitter {
    * @method constructor
    * @param  {String}    apiKey        自己去看百度文档
    * @param  {String}    secrectKey    自己去看百度文档
-   * @param  {String}    playCmd       播放器的命令
-   * @param  {String}    path          保存数据的路径
-   * @param  {Boolean}   bufferd=false 是否要保存到本地缓存起来
+   * @param  {String}    playCmd       the player command on your system 
+   * @param  {String}    path          the voice saved data path
+   * @param  {Boolean}   bufferd=false do you want save the voice data
    * @return {BDSpeech}                  [description]
    */
 
@@ -95,7 +95,6 @@ class BDSpeech extends eventEmitter {
    */
   initToken() {
     return new Promise((resolve, reject) => {
-      
       this.vaildToken()
           .then(resolve)
           .catch(() => {
@@ -140,17 +139,6 @@ class BDSpeech extends eventEmitter {
   requestToken(params) {
     // 从百度获取token session
     const _url = AccessUrl + "?" + querystring.stringify(params);
-
-    // return new Promise((resolve, reject) => {
-    //   request(_url, (err, res, body) => {
-    //     if(err){
-    //       console.log(err)
-    //     }
-
-    //     const { access_token: token } = JSON.parse(body);
-    //     this.saveToken(token).then(resolve).catch(reject);
-    //   });
-    // });
 
     return got(_url)
     .then(body => {
@@ -339,10 +327,12 @@ class BDSpeech extends eventEmitter {
     };
 
     const url = `${BDSpeechUrl}?${querystring.stringify(params)}`;
+    // @FIX 'Digest already calld' bug #issue 3
+    const hash = crypto.createHash('md5');
     hash.update(url);
     const dl = hash.digest('hex');
-    console.log(dl);
-
+    // console.log(dl);
+    
     // 语音文件
     const bufferFile = this.bufferdPath + "/" + dl;
     const speechFile = this.bufferd ? bufferFile : this.tempFile;
