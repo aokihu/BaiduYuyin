@@ -53,8 +53,10 @@ class BDSpeech extends eventEmitter {
     this.client_secret = secrectKey;
     this.grant_type = "client_credentials";
 
-    this.bufferd = bufferd; // 是否缓存音乐
-    this.bufferdPath = __dirname + "/download";
+    this.bufferd = bufferd; // whether save the buffer data
+    this.bufferdPath = __dirname + "/download"; // buffered voice data path
+    this.queues = []; // play voice queue
+    this.isPlaying = false; // is playing voice?
     this.sessionToken = "";
     this.isLogin = false;
     this.sessionFile = __dirname + "/session.json";
@@ -86,6 +88,12 @@ class BDSpeech extends eventEmitter {
         }
       });
     }
+
+    // Process self event
+    this.on('play end', () => {
+      this.isPlaying = false;
+      this.processQueue();
+    });
   }
 
   /**
@@ -197,8 +205,8 @@ class BDSpeech extends eventEmitter {
               if (!this.bufferd) {
                 fs.unlink(file, err => { if (err) { console.log(err) } })
               }
+              this.emit('play end');
               resolve();
-
             });
           }
         });
@@ -288,9 +296,14 @@ class BDSpeech extends eventEmitter {
    * @param {CMD} agent 中间人命令
    */
   speak(txt, lan = "zh", ctp = 1, spd = 4, pit = 5, vol = 4, per = 0){
+    
+    // save the speak command to the
+    const command = {txt,lan,ctp,spd,pit,vol,per};
+    this.queues.push(command);
+
     return this.initToken()
     .then(() => {
-      return this._speak({txt,lan,ctp,spd,pit,vol,per});
+      this.processQueue();
     })
 
   }
@@ -306,6 +319,19 @@ class BDSpeech extends eventEmitter {
     .then(() => {
       return this._speak({txt,lan,ctp,spd,pit,vol,per,agent});
     })
+  }
+
+
+  /**
+   * 
+   */
+  processQueue(){
+    if(this.isPlaying) return 0;
+    const command = this.queues.shift();
+    if(!!command){
+      this._speak(command);
+      this.isPlaying = true;
+    }
   }
 
   /**
@@ -332,7 +358,7 @@ class BDSpeech extends eventEmitter {
     hash.update(url);
     const dl = hash.digest('hex');
     // console.log(dl);
-    
+
     // 语音文件
     const bufferFile = this.bufferdPath + "/" + dl;
     const speechFile = this.bufferd ? bufferFile : this.tempFile;

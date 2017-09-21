@@ -29,6 +29,53 @@ const speech = new BDSpeech(apiKey, secretKey,'mplayer', '/tmp');
 speech.speak('你好，世界')
 ```
 
+Version 2.3.0 (2017.9.21)
+-----------------------
+Thanks ***buzai*** submit the bug report issue #3
+Now I fixed the probelm, and add continuous voice play function;
+you can easily use `speak` function, and the voice command will be saved into the queue,
+and will play after one voice command over.
+
+```javascript
+const speech = new BDSpeech("*****", 
+                            "*****", 
+                            'mplayer', 
+                            null, 
+                            buffer);
+
+async function speak(){
+  try{
+    speech.speak('你好世界');
+  } catch(err) {
+    console.log(err);
+  }
+  
+}
+
+speak();
+speak();
+speech.speak('byebye');
+
+```
+
+It will work well now!
+
+Sencondly, I add a private method called `agentSpeak`
+Before you use the method, you need write the play command with your self, but you have more power to control your play action, you can use GStreamer and plugins, like mixer or volume adjustment
+
+the keyword `${file}` is the only param in `agentSpeak` command
+
+```javascript
+const myCommand = 'gst-launch-1.0 playbin url=${file} ! ...';
+const speech = new BDSpeech("*****", 
+                            "*****", 
+                            'mplayer', 
+                            null, 
+                            buffer);
+
+speech.agentSpeak('hello world');
+```
+
 Version 2.0 (2017.6.25)
 -----------------------
 该版本使用Nodejs v8.0开发，会使用到ES2015，甚至ES0217的一些语法，建议您使用Nodejs v7.0以上使用

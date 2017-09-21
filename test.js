@@ -36,9 +36,10 @@ const speech = new BDSpeech("DAZTeCYAkuAQwtPvWDcBb9Ih",
 // speech.speak('OK的啦今天天气不错?出去玩不')
 // speech.agentSpeak('gst-launch-1.0 filesrc location=${file} ! decodebin ! audioconvert ! autoaudiosink','天气不错')
 
+let number = 0;
 async function speak(){
   try{
-    speech.speak('你好世界');
+    speech.speak('你好世界'+number++);
   } catch(err) {
     console.log(err);
   }
@@ -47,3 +48,5 @@ async function speak(){
 
 speak();
 speak();
+speak();
+speech.speak('byebye')
