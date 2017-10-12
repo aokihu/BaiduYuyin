@@ -1,6 +1,6 @@
 {
   "name": "baidu_yuyin",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "百度语音的Nodejs实现",
   "main": "index.js",
   "scripts": {
@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/aokihu/BaiduYuyin/issues"
   },
-  "homepage": "https://github.com/aokihu/BaiduYuyin#readme"
+  "homepage": "https://github.com/aokihu/BaiduYuyin#readme",
+  "dependencies": {
+    "little-fetch": "^1.0.4"
+  }
 }
